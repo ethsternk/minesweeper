@@ -36,3 +36,10 @@ body {
     background-position: center;
     background-size: 100%;
 }
+
+.closed {
+    background-image: url("http://szzljy.com/images/fox/fox3.jpg");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 200%;
+}
