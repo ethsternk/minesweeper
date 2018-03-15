@@ -1,73 +1,129 @@
 const container = document.getElementById("board");
-const boardArray = [];
+let boardArray = [];
 
 var board = {
     width: 10,
     height: 10,
     mines: 20,
-    
-    construct: function () {
+
+    generatePossibleCells: function () {
         let possibleCells = [];
         for (let i = 0; i < this.width * this.height; i++) {
-            if (i < this.width * this.height - this.mines) {
+            if (i < (this.width * this.height) - this.mines) {
                 possibleCells.push(" ");
             } else {
                 possibleCells.push("M");
             }
-        }        
-        for (let i = 0; i < this.height; i++) {
+        }
+        return possibleCells;
+    },
+
+    selectRandomPosition: function () {
+        const possibleCells = this.generatePossibleCells();
+        const randomPosition = Math.floor(Math.random() * possibleCells.length);
+        return possibleCells.splice( randomPosition, 1 )[0];
+    },
+
+    buildArray: function () {
+        for (let rowIndex = 0; rowIndex < (this.height + 2); rowIndex++) {
             boardArray.push([]);
-            for (let y = 0; y < this.width; y++) {                
-                boardArray[i].push(possibleCells.splice(Math.floor(Math.random() * possibleCells.length), 1).toString());
+            for (let colIndex = 0; colIndex < (this.width + 2); colIndex++) {
+                const isNotCeiling = rowIndex >= 1;
+                const isNotFloor = rowIndex < this.height + 1;
+                const isNotLeftWall = colIndex >= 1;
+                const isNotRightWall = colIndex < this.width + 1;
+                if ( isNotCeiling && isNotFloor && isNotLeftWall && isNotRightWall ) {
+                    boardArray[rowIndex].push( this.selectRandomPosition() );
+                } else {     
+                    boardArray[rowIndex][colIndex] = "-";
+                }
             }
         }
     },
-    
-    draw: function () {
-        for (let i = 0; i < this.height; i++) {
+
+    insertNumbersIntoArray: function () {
+        for (let i = 1; i < this.height + 1; i++) {
+            for (let y = 1; y < this.width + 1; y++) {
+                if (boardArray[i][y] === " ") {
+                    let surroundingMines = 0;
+                    if (boardArray[i - 1][y - 1] === "M") { surroundingMines++ };
+                    if (boardArray[i - 1][y] === "M") { surroundingMines++ };
+                    if (boardArray[i - 1][y + 1] === "M") { surroundingMines++ };
+                    if (boardArray[i][y - 1] === "M") { surroundingMines++ };
+                    if (boardArray[i][y + 1] === "M") { surroundingMines++ };
+                    if (boardArray[i + 1][y - 1] === "M") { surroundingMines++ };
+                    if (boardArray[i + 1][y] === "M") { surroundingMines++ };
+                    if (boardArray[i + 1][y + 1] === "M") { surroundingMines++ };
+                    boardArray[i][y] = surroundingMines;
+                }
+            }
+        }
+    },
+
+    drawHtml: function () {
+        for (let i = 1; i < this.height + 1; i++) {
             const row = document.createElement("div");
             row.className = "row";
             container.appendChild(row);
-            for (let y = 0; y < this.width; y++) {
+            for (let y = 1; y < this.width + 1; y++) {
                 const cell = document.createElement("div");
-
-                // let surroundingMines = 0;
-                // if (boardArray[i][y] === " ") {
-                //     if (boardArray[i-1][y-1]) { surroundingMines++ };
-                //     if (boardArray[i-1][y]) { surroundingMines++ };
-                //     if (boardArray[i-1][y+1]) { surroundingMines++ };
-                //     if (boardArray[i][y-1]) { surroundingMines++ };
-                //     if (boardArray[i][y+1]) { surroundingMines++ };
-                //     if (boardArray[i+1][y-1]) { surroundingMines++ };
-                //     if (boardArray[i+1][y]) { surroundingMines++ };
-                //     if (boardArray[i+1][y+1]) { surroundingMines++ };
-                // }
-
-                // cell.innerHTML = surroundingMines;
-
-                if (boardArray[i][y] === " ") {
-                    cell.className = "cell closed";
-                } else {
+                if (boardArray[i][y] === "M") {
                     cell.className = "cell mine closed";
+                } else {
+                    cell.className = "cell closed";
+                    if (boardArray[i][y] !== 0 && boardArray[i][y] !== "-")
+                        cell.classList.add("m" + boardArray[i][y]);
                 }
-                cell.addEventListener("click", this);
+                cell.addEventListener("click", this.handleLeftClick);
+                cell.addEventListener("contextmenu", this.handleRightClick, false);
                 row.appendChild(cell);
             }
         }
     },
 
-    handleEvent: function (event) {
+    handleLeftClick: function (event) {
         let target = event.target;
-        console.log(target);
-        target.classList.remove("closed");
-
-        if (target.classList.contains("mine")) {
-            setTimeout(function(){ alert("welp"); }, 50);
+        if (target.classList.contains("closed")) {
+            target.classList.remove("closed");
+            if (target.classList.contains("mine")) {
+                target.classList.add("dead");
+                setTimeout(function () {
+                    alert("welp");
+                }, 50);
+            }
         }
-    }
+    },
+
+    handleRightClick: function (event) {
+        let target = event.target;
+        event.preventDefault();
+        if (target.classList.contains("closed")) {
+            target.classList.remove("closed");
+            target.classList.add("flag");
+        } else if (target.classList.contains("flag")) {
+            target.classList.remove("flag");
+            target.classList.add("closed");
+        }
+        return false;
+    },
 
 }
 
-board.construct();
-board.draw();
+function reset() {
+    boardArray = [];
+    container.innerHTML = "";
+    board.width = Number( document.getElementById("width").value );
+    board.height = Number( document.getElementById("height").value );
+    board.mines = Number( document.getElementById("mines").value );
+    board.buildArray();
+    board.insertNumbersIntoArray();
+    board.drawHtml();
+    console.table(boardArray);
+}
+
+document.getElementById("start").addEventListener("click", reset)
+
+board.buildArray();
+board.insertNumbersIntoArray();
+board.drawHtml();
 console.table(boardArray);

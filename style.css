@@ -9,37 +9,76 @@ body {
     flex-flow: column nowrap;
     align-items: center;
     background-color: black;
+    color: white;
+}
+
+#customize {
+    margin-top: 3em;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+}
+
+.input {
+    display: flex;
+    flex-flow: row nowrap;
+    margin-bottom: 0.5em;
+}
+
+#start {
+    padding: 1px 7px 2px;
 }
 
 #board {
-    margin-top: 3em;
+    margin-top: 1em;
     display: flex;
     flex-flow: column nowrap;
 }
 
 .row {
-    height: 20px;
+    height: 35px;
     display: flex;
     flex-flow: row nowrap;
 }
 
 .cell {
-    width: 20px;
-    height: 20px;
+    width: 35px;
+    height: 35px;
     background-color: lightgray;
     border: 1px solid gray;
-}
-
-.mine {
-    background-image: url("mine.jpg");
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+    justify-content: center;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 100%;
 }
 
+.m1 { background-image: url("1.png"); }
+.m2 { background-image: url("2.png"); }
+.m3 { background-image: url("3.png"); }
+.m4 { background-image: url("4.png"); }
+.m5 { background-image: url("5.png"); }
+.m6 { background-image: url("6.png"); }
+.m7 { background-image: url("7.png"); }
+.m8 { background-image: url("8.png"); }
+
+.mine {
+    background-image: url("mine.png");
+    background-size: 100%;
+}
+
 .closed {
-    background-image: url("http://szzljy.com/images/fox/fox3.jpg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: 200%;
+    background-image: url("closed.png");
+    background-size: 100%;
+}
+
+.flag {
+    background-image: url("flag.png");
+    background-size: 100%;
+}
+
+.dead {
+    background-color: red;
 }
