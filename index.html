@@ -8,20 +8,28 @@
     <title>Minesweeper</title>
 </head>
 <body>
-    <div id="customize">
-        <div class="input">
-            <p>Width: </p>
-            <input type="number" id="width" value="10">
+    <div id="header">
+        <div id="flagCount">
+            15
         </div>
-        <div class="input">
-            <p>Height: </p>
-            <input type="number" id="height" value="10">
+        <div id="customize">
+            <div class="input">
+                <p>Width: </p>
+                <input type="number" id="width" value="10">
+            </div>
+            <div class="input">
+                <p>Height: </p>
+                <input type="number" id="height" value="10">
+            </div>
+            <div class="input">
+                <p>Mines: </p>
+                <input type="number" id="mines" value="15">
+            </div>
+            <button id="start">Reset</button>
         </div>
-        <div class="input">
-            <p>Mines: </p>
-            <input type="number" id="mines" value="20">
+        <div id="timer">
+            0
         </div>
-        <button id="start">Start</button>
     </div>
     <div id="board"></div>
     <script src="script.js"></script>
