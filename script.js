@@ -80,7 +80,7 @@ var board = {
         board.updateFlagCount();
     },
 
-    // unmasks cell
+    // "unmasks" cell upon left click
     handleLeftClick: function (event) {
         let target = event.target;
         gameLive = true;
@@ -112,7 +112,7 @@ var board = {
         board.checkForWin();
     },
 
-    // adds or removes flag from cell
+    // toggles flag upon right click
     handleRightClick: function (event) {
         let target = event.target;
         event.preventDefault();
