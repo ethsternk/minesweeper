@@ -92,10 +92,14 @@ var board = {
                 function clearNewCell(down, right) {
                     document.getElementById((Number(pos[0]) + down) + "-" + (Number(pos[1]) + right)).click();
                 }
-                if (pos[0] < board.height) { clearNewCell(1, 0); };
+                if (pos[0] > 1 && pos[1] > 1) { clearNewCell(-1, -1); };
                 if (pos[0] > 1) { clearNewCell(-1, 0); };
+                if (pos[0] > 1 && pos[1] < board.width) { clearNewCell(-1, 1); };
                 if (pos[1] < board.width) { clearNewCell(0, 1); };
                 if (pos[1] > 1) { clearNewCell(0, -1); };
+                if (pos[0] < board.height || pos[1] > 1) { clearNewCell(1, -1); };
+                if (pos[0] < board.height) { clearNewCell(1, 0); };
+                if (pos[0] < board.height && pos[1] < board.width) { clearNewCell(1, 1); };
             }
             // ...if the cell is a mine, you lose
             if (target.classList.contains("mine")) {
@@ -152,6 +156,7 @@ var board = {
     lose: function () {
         for (let i = 0; i < cells.length; i++) {
             cells[i].classList.remove("closed");
+            cells[i].classList.remove("flag");
         }
         gameLive = false;
         setTimeout(function () {
