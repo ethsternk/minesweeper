@@ -42,14 +42,14 @@ var board = {
             for (let y = 1; y < this.width + 1; y++) {
                 if (boardArray[x][y] === " ") {
                     let surroundingMines = 0;
-                    if (boardArray[x - 1][y - 1] === "M") { surroundingMines++ };
-                    if (boardArray[x - 1][y] === "M") { surroundingMines++ };
-                    if (boardArray[x - 1][y + 1] === "M") { surroundingMines++ };
-                    if (boardArray[x][y - 1] === "M") { surroundingMines++ };
-                    if (boardArray[x][y + 1] === "M") { surroundingMines++ };
-                    if (boardArray[x + 1][y - 1] === "M") { surroundingMines++ };
-                    if (boardArray[x + 1][y] === "M") { surroundingMines++ };
-                    if (boardArray[x + 1][y + 1] === "M") { surroundingMines++ };
+                    if (boardArray[x - 1][y - 1] === "M") { surroundingMines++; };
+                    if (boardArray[x - 1][y] === "M") { surroundingMines++; };
+                    if (boardArray[x - 1][y + 1] === "M") { surroundingMines++; };
+                    if (boardArray[x][y - 1] === "M") { surroundingMines++; };
+                    if (boardArray[x][y + 1] === "M") { surroundingMines++; };
+                    if (boardArray[x + 1][y - 1] === "M") { surroundingMines++; };
+                    if (boardArray[x + 1][y] === "M") { surroundingMines++; };
+                    if (boardArray[x + 1][y + 1] === "M") { surroundingMines++; };
                     boardArray[x][y] = surroundingMines;
                 }
             }
@@ -80,33 +80,27 @@ var board = {
         board.updateFlagCount();
     },
 
-    // "unmasks" cell upon left click
+    // "unmasks" cell upon left click and...
     handleLeftClick: function (event) {
         let target = event.target;
         gameLive = true;
         if (target.classList.contains("closed")) {
             target.classList.remove("closed");
-            // if the cell is empty, clear all neighbors too
+            // ...if the cell is "empty" (no neighboring mines), clear all neighbors too
             if (target.classList.contains("m0")) {
                 let pos = target.id.split("-");
                 function clearNewCell(down, right) {
-                    document.getElementById( (Number(pos[0]) + down) + "-" + (Number(pos[1]) + right) ).click();
+                    document.getElementById((Number(pos[0]) + down) + "-" + (Number(pos[1]) + right)).click();
                 }
-                if (pos[0] < board.height) { clearNewCell(1, 0); }
-                if (pos[0] > 1) { clearNewCell(-1, 0); }
-                if (pos[1] < board.width) { clearNewCell(0, 1); }
-                if (pos[1] > 1) { clearNewCell(0, -1); }
+                if (pos[0] < board.height) { clearNewCell(1, 0); };
+                if (pos[0] > 1) { clearNewCell(-1, 0); };
+                if (pos[1] < board.width) { clearNewCell(0, 1); };
+                if (pos[1] > 1) { clearNewCell(0, -1); };
             }
-            // if the cell is a mine, you lose
+            // ...if the cell is a mine, you lose
             if (target.classList.contains("mine")) {
                 target.classList.add("dead");
-                for (let i = 0; i < cells.length; i++) {
-                    cells[i].classList.remove("closed");
-                }
-                gameLive = false;
-                setTimeout(function () {
-                    alert("You lose!");
-                }, 50);
+                board.lose();
             }
         }
         board.checkForWin();
@@ -148,24 +142,38 @@ var board = {
                 cells[i].classList.remove("flag");
             }
             gameLive = false;
-            setTimeout(function () { alert("You win!"); }, 50);
+            setTimeout(function () {
+                alert("You win!");
+            }, 50);
         }
+    },
+
+    // reveals all cells if you lose
+    lose: function () {
+        for (let i = 0; i < cells.length; i++) {
+            cells[i].classList.remove("closed");
+        }
+        gameLive = false;
+        setTimeout(function () {
+            alert("You lose!");
+        }, 50);
+    },
+
+    // resets the board with new values
+    reset: function () {
+        boardArray = [];
+        container.innerHTML = "";
+        board.width = Number(document.getElementById("width").value);
+        board.height = Number(document.getElementById("height").value);
+        board.mines = Number(document.getElementById("mines").value);
+        board.createPossibleCells();
+        board.buildArray();
+        board.insertNumbers();
+        board.drawHtml();
+        cells = document.getElementsByClassName("cell");
+        console.table(boardArray);
     }
 
-}
-
-// resets the board with new values
-function reset() {
-    boardArray = [];
-    container.innerHTML = "";
-    board.width = Number(document.getElementById("width").value);
-    board.height = Number(document.getElementById("height").value);
-    board.mines = Number(document.getElementById("mines").value);
-    board.createPossibleCells();
-    board.buildArray();
-    board.insertNumbers();
-    board.drawHtml();
-    console.table(boardArray);
 }
 
 // runs timer
@@ -177,7 +185,7 @@ setInterval(function () {
 }, 1000);
 
 // adds click listener to the reset button
-document.getElementById("start").addEventListener("click", reset);
+document.getElementById("start").addEventListener("click", board.reset);
 
 // builds default board upon page load
 board.createPossibleCells();
